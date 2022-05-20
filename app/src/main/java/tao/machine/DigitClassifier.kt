@@ -25,6 +25,7 @@ class DigitClassifier(private val context: Context) {
 
   private var inputImageWidth: Int = 0 // will be inferred from TF Lite model
   private var inputImageHeight: Int = 0 // will be inferred from TF Lite model
+  private var channel: Int = 3 //
   private var modelInputSize: Int = 0 // will be inferred from TF Lite model
 
   fun initialize(): Task<Void?> {
@@ -55,7 +56,8 @@ class DigitClassifier(private val context: Context) {
     val inputShape = interpreter.getInputTensor(0).shape()
     inputImageWidth = inputShape[1]
     inputImageHeight = inputShape[2]
-    modelInputSize = FLOAT_TYPE_SIZE * inputImageWidth * inputImageHeight * PIXEL_SIZE
+    channel = inputShape[3]
+    modelInputSize = FLOAT_TYPE_SIZE * inputImageWidth * inputImageHeight * channel * PIXEL_SIZE
 
     // Finish interpreter initialization
     this.interpreter = interpreter
@@ -73,7 +75,7 @@ class DigitClassifier(private val context: Context) {
     return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
   }
 
-  private fun classify(bitmap: Bitmap): String {
+  private fun classify(bitmap: Bitmap): FloatArray {
     if (!isInitialized) {
       throw IllegalStateException("TF Lite Interpreter is not initialized yet.")
     }
@@ -97,8 +99,8 @@ class DigitClassifier(private val context: Context) {
     return getOutputString(result[0])
   }
 
-  fun classifyAsync(bitmap: Bitmap): Task<String> {
-    val task = TaskCompletionSource<String>()
+  fun classifyAsync(bitmap: Bitmap): Task<FloatArray> {
+    val task = TaskCompletionSource<FloatArray>()
     executorService.execute {
       val result = classify(bitmap)
       task.setResult(result)
@@ -133,9 +135,9 @@ class DigitClassifier(private val context: Context) {
     return byteBuffer
   }
 
-  private fun getOutputString(output: FloatArray): String {
+  private fun getOutputString(output: FloatArray): FloatArray {
     val maxIndex = output.indices.maxByOrNull { output[it] } ?: -1
-    return "Prediction Result: %d\nConfidence: %2f".format(maxIndex, output[maxIndex])
+    return output
   }
 
   companion object {
@@ -146,6 +148,6 @@ class DigitClassifier(private val context: Context) {
     private const val FLOAT_TYPE_SIZE = 4
     private const val PIXEL_SIZE = 1
 
-    private const val OUTPUT_CLASSES_COUNT = 10
+    private const val OUTPUT_CLASSES_COUNT = 8
   }
 }

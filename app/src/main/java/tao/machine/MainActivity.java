@@ -1,8 +1,10 @@
 package tao.machine;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,9 +23,10 @@ public class MainActivity extends AppCompatActivity {
         this.digitClassifier.initialize().addOnSuccessListener(unused -> {
             Log.e("init", "finish");
 
-            digitClassifier.classifyAsync(
-                BitmapFactory.decodeResource(getResources(), R.mipmap.tesla)
-            ).addOnSuccessListener(s -> Log.e("success", Arrays.toString(s)));
+            digitClassifier.classifyAsync(BitmapFactory.decodeResource(getResources(), R.mipmap.tesla))
+                .addOnSuccessListener(bitmap -> {
+                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
+                });
         });
     }
 }

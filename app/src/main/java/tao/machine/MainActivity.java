@@ -4,10 +4,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Arrays;
 

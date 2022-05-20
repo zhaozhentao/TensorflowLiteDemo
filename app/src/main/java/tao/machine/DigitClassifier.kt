@@ -80,15 +80,12 @@ class DigitClassifier(private val context: Context) {
             throw IllegalStateException("TF Lite Interpreter is not initialized yet.")
         }
 
-        var startTime: Long
-        var elapsedTime: Long
-
         // Preprocessing: resize the input
-        startTime = System.nanoTime()
+        var startTime: Long = System.nanoTime()
         val resizedImage =
             Bitmap.createScaledBitmap(bitmap, inputImageWidth, inputImageHeight, true)
         val byteBuffer = convertBitmapToByteBuffer(resizedImage)
-        elapsedTime = (System.nanoTime() - startTime) / 1000000
+        var elapsedTime: Long = (System.nanoTime() - startTime) / 1000000
         Log.d(TAG, "Preprocessing time = " + elapsedTime + "ms")
 
         startTime = System.nanoTime()
@@ -114,9 +111,6 @@ class DigitClassifier(private val context: Context) {
         val right = Math.max(x3, x4) * inputImageWidth
         val bottom = Math.max(y2, y3) * inputImageHeight
 
-        println("left: ${left}")
-        println("top: ${top}")
-
         return Bitmap.createBitmap(
             resizedImage,
             left.toInt(),
@@ -133,13 +127,6 @@ class DigitClassifier(private val context: Context) {
             task.setResult(result)
         }
         return task.task
-    }
-
-    fun close() {
-        executorService.execute {
-            interpreter?.close()
-            Log.d(TAG, "Closed TFLite interpreter.")
-        }
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
@@ -161,11 +148,6 @@ class DigitClassifier(private val context: Context) {
         }
 
         return byteBuffer
-    }
-
-    private fun getOutputString(output: FloatArray): FloatArray {
-        val maxIndex = output.indices.maxByOrNull { output[it] } ?: -1
-        return output
     }
 
     companion object {

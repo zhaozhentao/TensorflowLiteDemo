@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -76,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Toast.makeText(this, "回调了", Toast.LENGTH_SHORT).show();
-
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -89,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             photo = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
             digitClassifier.classifyAsync(photo)
                 .addOnSuccessListener(bitmap -> {
-                    Toast.makeText(this, "识别成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "哦哦哦", Toast.LENGTH_SHORT).show();
                     ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
                 });
         } catch (FileNotFoundException e) {

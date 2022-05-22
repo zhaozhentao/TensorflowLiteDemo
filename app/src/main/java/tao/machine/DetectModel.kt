@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import org.tensorflow.lite.Interpreter
 
-class DigitClassifier(private val context: Context) {
+class DetectModel(private val context: Context) {
     private var interpreter: Interpreter? = null
     var isInitialized = false
         private set
@@ -49,7 +49,7 @@ class DigitClassifier(private val context: Context) {
 
         // Initialize TF Lite Interpreter with NNAPI enabled
         val options = Interpreter.Options()
-        options.setUseNNAPI(true)
+        options.useNNAPI = true
         val interpreter = Interpreter(model, options)
 
         // Read input shape from model file

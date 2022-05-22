@@ -22,7 +22,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DigitClassifier digitClassifier;
+    private DetectModel detectModel;
 
     private Uri imageUri;
 
@@ -31,15 +31,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.digitClassifier = new DigitClassifier(this);
-        this.digitClassifier.initialize().addOnSuccessListener(unused -> {
-            digitClassifier.classifyAsync(BitmapFactory.decodeResource(getResources(), R.mipmap.tesla))
-                .addOnSuccessListener(bitmap -> {
-                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
-                });
-        });
+        this.detectModel = new DetectModel(this);
+        this.detectModel.initialize();
 
-        findViewById(R.id.take).setOnClickListener(view -> takePhoto());
+        findViewById(R.id.take).setOnClickListener(v -> takePhoto());
     }
 
     private File createImageFile() {
@@ -84,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             photo = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
-            digitClassifier.classifyAsync(photo)
+            detectModel.classifyAsync(photo)
                 .addOnSuccessListener(bitmap -> {
                     Toast.makeText(this, "哦哦哦", Toast.LENGTH_SHORT).show();
                     ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);

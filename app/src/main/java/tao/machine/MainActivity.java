@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private DetectModel detectModel;
 
+    private OcrModel ocrModel;
+
     private Uri imageUri;
 
     static {
@@ -42,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         this.detectModel = new DetectModel(this);
         this.detectModel.initialize();
+
+        this.ocrModel = new OcrModel(this);
+        this.ocrModel.initialize();
 
         findViewById(R.id.take).setOnClickListener(v -> takePhoto());
     }
@@ -90,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(bitmap -> {
                     Toast.makeText(MainActivity.this, "耗时 " + (System.currentTimeMillis() - start), Toast.LENGTH_SHORT).show();
                     ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
+
+                    ocrModel.classifyAsync(bitmap).addOnSuccessListener(plate -> ((TextView)findViewById(R.id.plate)).setText(plate));
                 });
         } catch (FileNotFoundException e) {
             e.printStackTrace();

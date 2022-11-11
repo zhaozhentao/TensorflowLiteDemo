@@ -69,20 +69,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode != RESULT_OK) {
-            return;
-        }
+        if (resultCode != RESULT_OK) return;
 
         try {
             Bitmap photo = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             photo = Bitmap.createBitmap(photo, 0, 0, photo.getWidth(), photo.getHeight(), matrix, true);
+            long start = System.currentTimeMillis();
             detectModel.classifyAsync(photo)
                 .addOnSuccessListener(bitmap -> {
-                    Toast.makeText(this, "哦哦哦", Toast.LENGTH_SHORT).show();
-                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
+                    Toast.makeText(MainActivity.this, "耗时 " + (System.currentTimeMillis() - start), Toast.LENGTH_SHORT).show();
+                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap) ;
                 });
         } catch (FileNotFoundException e) {
             e.printStackTrace();

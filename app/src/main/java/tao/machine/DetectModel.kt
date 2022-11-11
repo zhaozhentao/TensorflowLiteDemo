@@ -18,7 +18,6 @@ import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-
 class DetectModel(private val context: Context) {
     private var interpreter: Interpreter? = null
     var isInitialized = false
@@ -116,7 +115,8 @@ class DetectModel(private val context: Context) {
         val point3 = Point(x4.toDouble(), y4.toDouble())
 
         val mat1 = MatOfPoint2f(point0, point3, point1, point2)
-        val mat2 = MatOfPoint2f(Point(0.0, 0.0), Point(144.0, 0.0), Point(0.0, 50.0), Point(144.0, 50.0))
+        val mat2 =
+            MatOfPoint2f(Point(0.0, 0.0), Point(144.0, 0.0), Point(0.0, 50.0), Point(144.0, 50.0))
         val transform = Imgproc.getPerspectiveTransform(mat1, mat2)
         val plateImage = Mat(144, 50, CvType.CV_8UC3)
 
@@ -124,7 +124,8 @@ class DetectModel(private val context: Context) {
         Utils.bitmapToMat(resizedImage, rawImage)
         Imgproc.warpPerspective(rawImage, plateImage, transform, Size(144.0, 50.0))
 
-        val bitmap = Bitmap.createBitmap(plateImage.cols(), plateImage.rows(), Bitmap.Config.ARGB_8888);
+        val bitmap =
+            Bitmap.createBitmap(plateImage.cols(), plateImage.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(plateImage, bitmap);
 
         return bitmap
@@ -132,10 +133,7 @@ class DetectModel(private val context: Context) {
 
     fun classifyAsync(bitmap: Bitmap): Task<Bitmap> {
         val task = TaskCompletionSource<Bitmap>()
-        executorService.execute {
-            val result = classify(bitmap)
-            task.setResult(result)
-        }
+        executorService.execute { task.setResult(classify(bitmap)) }
         return task.task
     }
 

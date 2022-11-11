@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             detectModel.classifyAsync(photo)
                 .addOnSuccessListener(bitmap -> {
                     Toast.makeText(MainActivity.this, "耗时 " + (System.currentTimeMillis() - start), Toast.LENGTH_SHORT).show();
-                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap) ;
+                    ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
                 });
         } catch (FileNotFoundException e) {
             e.printStackTrace();

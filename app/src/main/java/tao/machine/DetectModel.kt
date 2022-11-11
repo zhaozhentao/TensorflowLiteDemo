@@ -118,7 +118,7 @@ class DetectModel(private val context: Context) {
         val mat2 =
             MatOfPoint2f(Point(0.0, 0.0), Point(144.0, 0.0), Point(0.0, 50.0), Point(144.0, 50.0))
         val transform = Imgproc.getPerspectiveTransform(mat1, mat2)
-        val plateImage = Mat(144, 50, CvType.CV_8UC3)
+        val plateImage = Mat()
 
         val rawImage = Mat()
         Utils.bitmapToMat(bitmap, rawImage)

@@ -77,18 +77,11 @@ class OcrModel(private val context: Context) {
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
     }
 
-    private fun classify(bitmap: Bitmap): String {
+    private fun classify(resizedImage: Bitmap): String {
         if (!isInitialized) throw IllegalStateException("TF Lite Interpreter is not initialized yet.")
 
-        // Preprocessing: resize the input
-        var startTime: Long = System.nanoTime()
-        val resizedImage =
-            Bitmap.createScaledBitmap(bitmap, inputImageWidth, inputImageHeight, true)
         val byteBuffer = convertBitmapToByteBuffer(resizedImage)
-        var elapsedTime: Long = (System.nanoTime() - startTime) / 1000000
-        Log.d(TAG, "Preprocessing time = " + elapsedTime + "ms")
 
-        startTime = System.nanoTime()
         val result = Array(14) {
             Array(1) {
                 FloatArray(87)
@@ -96,8 +89,6 @@ class OcrModel(private val context: Context) {
         }
 
         interpreter?.run(byteBuffer, result)
-        elapsedTime = (System.nanoTime() - startTime) / 1000000
-        Log.d(TAG, "Inference time = " + elapsedTime + "ms")
 
         val sb = StringBuilder()
         var lastIndex = -1;
@@ -147,8 +138,5 @@ class OcrModel(private val context: Context) {
 
         private const val FLOAT_TYPE_SIZE = 4
         private const val PIXEL_SIZE = 1
-
-        // shape is (14, 1, 87)，each plate have 14 character at most
-        private const val OUTPUT_CLASSES_COUNT = 14 * 1 * 87
     }
 }

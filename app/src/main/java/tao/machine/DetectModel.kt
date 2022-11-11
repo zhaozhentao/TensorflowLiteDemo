@@ -97,17 +97,17 @@ class DetectModel(private val context: Context) {
         elapsedTime = (System.nanoTime() - startTime) / 1000000
         Log.d(TAG, "Inference time = " + elapsedTime + "ms")
 
-        val x1 = result[0][0] * inputImageWidth
-        val y1 = result[0][1] * inputImageHeight
+        val x1 = result[0][0] * bitmap.width
+        val y1 = result[0][1] * bitmap.height
 
-        val x2 = result[0][2] * inputImageWidth
-        val y2 = result[0][3] * inputImageHeight
+        val x2 = result[0][2] * bitmap.width
+        val y2 = result[0][3] * bitmap.height
 
-        val x3 = result[0][4] * inputImageWidth
-        val y3 = result[0][5] * inputImageHeight
+        val x3 = result[0][4] * bitmap.width
+        val y3 = result[0][5] * bitmap.height
 
-        val x4 = result[0][6] * inputImageWidth
-        val y4 = result[0][7] * inputImageHeight
+        val x4 = result[0][6] * bitmap.width
+        val y4 = result[0][7] * bitmap.height
 
         val point0 = Point(x1.toDouble(), y1.toDouble())
         val point1 = Point(x2.toDouble(), y2.toDouble())
@@ -121,14 +121,14 @@ class DetectModel(private val context: Context) {
         val plateImage = Mat(144, 50, CvType.CV_8UC3)
 
         val rawImage = Mat()
-        Utils.bitmapToMat(resizedImage, rawImage)
+        Utils.bitmapToMat(bitmap, rawImage)
         Imgproc.warpPerspective(rawImage, plateImage, transform, Size(144.0, 50.0))
 
-        val bitmap =
+        val plateBitmap =
             Bitmap.createBitmap(plateImage.cols(), plateImage.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(plateImage, bitmap);
+        Utils.matToBitmap(plateImage, plateBitmap);
 
-        return bitmap
+        return plateBitmap
     }
 
     fun classifyAsync(bitmap: Bitmap): Task<Bitmap> {

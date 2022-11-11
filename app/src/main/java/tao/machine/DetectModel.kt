@@ -6,6 +6,10 @@ import android.graphics.Bitmap
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
+import org.opencv.android.Utils
+import org.opencv.core.*
+import org.opencv.imgproc.Imgproc
+import org.tensorflow.lite.Interpreter
 import java.io.FileInputStream
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -13,7 +17,7 @@ import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import org.tensorflow.lite.Interpreter
+
 
 class DetectModel(private val context: Context) {
     private var interpreter: Interpreter? = null
@@ -94,30 +98,36 @@ class DetectModel(private val context: Context) {
         elapsedTime = (System.nanoTime() - startTime) / 1000000
         Log.d(TAG, "Inference time = " + elapsedTime + "ms")
 
-        val x1 = result[0][0]
-        val y1 = result[0][1]
+        val x1 = result[0][0] * inputImageWidth
+        val y1 = result[0][1] * inputImageHeight
 
-        val x2 = result[0][2]
-        val y2 = result[0][3]
+        val x2 = result[0][2] * inputImageWidth
+        val y2 = result[0][3] * inputImageHeight
 
-        val x3 = result[0][4]
-        val y3 = result[0][5]
+        val x3 = result[0][4] * inputImageWidth
+        val y3 = result[0][5] * inputImageHeight
 
-        val x4 = result[0][6]
-        val y4 = result[0][7]
+        val x4 = result[0][6] * inputImageWidth
+        val y4 = result[0][7] * inputImageHeight
 
-        val left = Math.min(x1, x2) * inputImageWidth
-        val top = Math.min(y1, y4) * inputImageHeight
-        val right = Math.max(x3, x4) * inputImageWidth
-        val bottom = Math.max(y2, y3) * inputImageHeight
+        val point0 = Point(x1.toDouble(), y1.toDouble())
+        val point1 = Point(x2.toDouble(), y2.toDouble())
+        val point2 = Point(x3.toDouble(), y3.toDouble())
+        val point3 = Point(x4.toDouble(), y4.toDouble())
 
-        return Bitmap.createBitmap(
-            resizedImage,
-            left.toInt(),
-            top.toInt(),
-            right.toInt() - left.toInt(),
-            bottom.toInt() - top.toInt()
-        )
+        val mat1 = MatOfPoint2f(point0, point3, point1, point2)
+        val mat2 = MatOfPoint2f(Point(0.0, 0.0), Point(144.0, 0.0), Point(0.0, 50.0), Point(144.0, 50.0))
+        val transform = Imgproc.getPerspectiveTransform(mat1, mat2)
+        val plateImage = Mat(144, 50, CvType.CV_8UC3)
+
+        val rawImage = Mat()
+        Utils.bitmapToMat(resizedImage, rawImage)
+        Imgproc.warpPerspective(rawImage, plateImage, transform, Size(144.0, 50.0))
+
+        val bitmap = Bitmap.createBitmap(plateImage.cols(), plateImage.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(plateImage, bitmap);
+
+        return bitmap
     }
 
     fun classifyAsync(bitmap: Bitmap): Task<Bitmap> {

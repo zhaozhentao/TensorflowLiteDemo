@@ -14,6 +14,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.osgi.OpenCVInterface;
+import org.opencv.osgi.OpenCVNativeLoader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
     private DetectModel detectModel;
 
     private Uri imageUri;
+
+    static {
+        OpenCVNativeLoader loader = new OpenCVNativeLoader();
+        loader.init();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
             long start = System.currentTimeMillis();
             detectModel.classifyAsync(photo)
                 .addOnSuccessListener(bitmap -> {
+
                     Toast.makeText(MainActivity.this, "耗时 " + (System.currentTimeMillis() - start), Toast.LENGTH_SHORT).show();
                     ((ImageView) findViewById(R.id.image)).setImageBitmap(bitmap);
                 });

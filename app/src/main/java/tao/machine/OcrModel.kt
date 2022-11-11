@@ -123,9 +123,9 @@ class OcrModel(private val context: Context) {
             val b = (pixelValue and 0xFF)
 
             // Convert RGB to grayscale and normalize pixel value to [0..1]
-            byteBuffer.putFloat(r / 255.0f)
-            byteBuffer.putFloat(g / 255.0f)
             byteBuffer.putFloat(b / 255.0f)
+            byteBuffer.putFloat(g / 255.0f)
+            byteBuffer.putFloat(r / 255.0f)
         }
 
         return byteBuffer

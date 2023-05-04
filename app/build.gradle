@@ -2,7 +2,11 @@ plugins {
     id 'com.android.application'
 }
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
+
+kotlin {
+    jvmToolchain(8)
+}
 
 android {
     compileSdk 32
@@ -27,6 +31,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    namespace 'tao.machine'
 }
 
 dependencies {
@@ -34,7 +39,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'org.tensorflow:tensorflow-lite:2.9.0'
+    implementation 'org.tensorflow:tensorflow-lite:2.12.0'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation "com.google.android.gms:play-services-tasks:18.0.1"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
